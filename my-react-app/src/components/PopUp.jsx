@@ -14,7 +14,7 @@ export default function PopUp({
     <Modal
       isOpen={isOpen}
       onRequestClose={onClose}
-      shouldCloseOnOverlayClick={removeClose ? false : true}
+      shouldCloseOnOverlayClick={!removeClose}
       className="modal-content"
       overlayClassName="modal-overlay"
       closeTimeoutMS={400}

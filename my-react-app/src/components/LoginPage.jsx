@@ -1,44 +1,42 @@
-import * as React from "react";
+import React, { useState } from "react";
 import { AppProvider } from "@toolpad/core/AppProvider";
-import { Button, TextField, Box, Typography } from "@mui/material";
+import { Button, TextField, Box, Typography, InputAdornment, CircularProgress } from "@mui/material";
 import { createTheme } from "@mui/material/styles";
 import GoogleIcon from "@mui/icons-material/Google";
 import CheckIcon from "@mui/icons-material/Check";
-import { InputAdornment } from "@mui/material";
-import { Link } from "react-router-dom";
-import { useNavigate } from "react-router-dom";
-import { CircularProgress } from "@mui/material";
+import { Link, useNavigate } from "react-router-dom";
+
+const THEME = createTheme({
+  palette: {
+    mode: "light",
+    primary: { main: "#1976d2" },
+  },
+  typography: {
+    button: { textTransform: "none", fontWeight: 400 },
+  },
+});
 
 export default function LoginPage() {
-  const [username, setUsername] = React.useState("");
-  const [error, setError] = React.useState("");
-  const [password, setPassword] = React.useState("");
-  const [passwordError, setPasswordError] = React.useState("");
-  const [successError, setSuccessError] = React.useState("");
-  const [success, setSuccess] = React.useState(false);
-  const [loading, setLoading] = React.useState(false);
-  const [loadingGoogle, setGoogleLoading] = React.useState(false);
+  const [username, setUsername] = useState("");
+  const [error, setError] = useState("");
+  const [password, setPassword] = useState("");
+  const [passwordError, setPasswordError] = useState("");
+  const [successError, setSuccessError] = useState("");
+  const [success, setSuccess] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [loadingGoogle, setGoogleLoading] = useState(false);
+
+  const navigate = useNavigate();
 
   const signInWithGoogle = async () => {
     try {
       setGoogleLoading(true);
       window.location.href = "http://localhost:3000/auth/google";
     } catch (error) {
-      console.log("Error while signing in: ", error);
+      console.error("Error while signing in: ", error);
+      setGoogleLoading(false);
     }
   };
-
-  const navigate = useNavigate();
-
-  const THEME = createTheme({
-    palette: {
-      mode: "light",
-      primary: { main: "#1976d2" },
-    },
-    typography: {
-      button: { textTransform: "none", fontWeight: 400 },
-    },
-  });
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -53,51 +51,25 @@ export default function LoginPage() {
       const data = await result.json();
       setLoading(false);
       setSuccess(data.success);
+
       if (data.success) {
         setSuccessError(data.message);
-        window.location.href='/home';
+        navigate("/home");
       } else {
         setSuccessError(data.message);
       }
     } catch (error) {
-      console.log("Error while loging in!");
+      setLoading(false);
+      console.error("Error while logging in!");
     }
   };
 
   return (
     <div className="login">
       <AppProvider theme={THEME}>
-        <Box
-          sx={{
-            display: "flex",
-            flexDirection: "column",
-            justifyContent: "center",
-            alignItems: "center",
-            minHeight: "100vh",
-          }}
-        >
-          <Box
-            component="form"
-            onSubmit={handleSubmit}
-            sx={{
-              display: "flex",
-              flexDirection: "column",
-              gap: "1rem",
-              width: "100%",
-              maxWidth: 400,
-              backgroundColor: "white",
-              padding: "50px",
-              borderRadius: "10px",
-              boxShadow: "0 6px 20px rgba(0, 0, 0, 0.15)",
-              border: "1px solid rgba(255, 255, 255, 0.2)",
-            }}
-          >
-            <Typography
-              variant="h4"
-              align="center"
-              fontWeight={500}
-              color="rgb(195, 5, 5)"
-            >
+        <Box sx={styles.container}>
+          <Box component="form" onSubmit={handleSubmit} sx={styles.formCard}>
+            <Typography variant="h4" align="center" fontWeight={500} color="rgb(195, 5, 5)">
               Log In
             </Typography>
 
@@ -105,20 +77,7 @@ export default function LoginPage() {
               <Typography
                 variant="body1"
                 align="center"
-                sx={{
-                  backgroundColor: success
-                    ? "rgba(12, 225, 111, 0.3)"
-                    : "rgba(255, 0, 0, 0.3)",
-                  padding: 1,
-                  color: success ? "green" : "rgb(195, 5, 5)",
-                  fontWeight: 500,
-                  marginBottom: "-5px",
-                  transition: "all 0.5s ease",
-                  opacity: successError ? 1 : 0,
-                  transform: successError
-                    ? "translateY(0)"
-                    : "translateY(-10px)",
-                }}
+                sx={styles.alertText(success, successError)}
               >
                 {successError}
               </Typography>
@@ -135,6 +94,9 @@ export default function LoginPage() {
                   setError("invalidChars");
                 } else if (value.length < 4) {
                   setError("lengthError");
+                }
+                else if (/[A-Z]/.test(value)) {
+                  setError("capitalError")
                 } else {
                   setError("");
                 }
@@ -145,9 +107,9 @@ export default function LoginPage() {
                   ? "At least 4 characters allowed!"
                   : error === "invalidChars"
                     ? "Only letters, numbers, _ , and . allowed"
-                    : ""
+                    : error === "capitalError" ? "No capital letters allowed for username!" : " "
               }
-              FormHelperTextProps={{ style: { color: "red" } }}
+              FormHelperTextProps={{ sx: styles.helperText }}
               fullWidth
               variant="outlined"
               required
@@ -155,41 +117,13 @@ export default function LoginPage() {
                 input: {
                   endAdornment: username && !error && (
                     <InputAdornment position="end">
-                      <CheckIcon sx={{ color: "green" }} />
+                      <CheckIcon sx={styles.checkIcon} />
                     </InputAdornment>
                   ),
                 },
               }}
               autoComplete="off"
-              sx={{
-                borderRadius: "8px",
-                backgroundColor: "white",
-                "& label.Mui-focused": {
-                  color: !username
-                    ? "rgb(195, 5, 5)"
-                    : error
-                      ? "red"
-                      : "rgb(15, 169, 88)",
-                },
-                "& .MuiOutlinedInput-root": {
-                  "& fieldset": {
-                    borderColor: !username
-                      ? "gray"
-                      : error
-                        ? "red"
-                        : "rgb(15, 169, 88)",
-                  },
-                  "&:hover fieldset": { borderColor: "black" },
-
-                  "&.Mui-focused fieldset": {
-                    borderColor: !username
-                      ? "rgb(195, 5, 5)"
-                      : error
-                        ? "red"
-                        : "rgb(15, 169, 88)",
-                  },
-                },
-              }}
+              sx={styles.textField(username, error)}
             />
 
             <TextField
@@ -206,10 +140,8 @@ export default function LoginPage() {
                 }
               }}
               error={!!passwordError}
-              helperText={
-                passwordError ? "At least 4 characters required!" : ""
-              }
-              FormHelperTextProps={{ style: { color: "red" } }}
+              helperText={passwordError ? "At least 4 characters required!" : ""}
+              FormHelperTextProps={{ sx: styles.helperText }}
               fullWidth
               required
               autoComplete="off"
@@ -217,40 +149,13 @@ export default function LoginPage() {
                 input: {
                   endAdornment: password && !passwordError && (
                     <InputAdornment position="end">
-                      <CheckIcon sx={{ color: "green" }} />
+                      <CheckIcon sx={styles.checkIcon} />
                     </InputAdornment>
                   ),
                 },
               }}
               variant="outlined"
-              sx={{
-                borderRadius: "8px",
-                backgroundColor: "white",
-                "& label.Mui-focused": {
-                  color: !password
-                    ? "rgb(195, 5, 5)"
-                    : passwordError
-                      ? "red"
-                      : "rgb(15, 169, 88)",
-                },
-                "& .MuiOutlinedInput-root": {
-                  "& fieldset": {
-                    borderColor: !password
-                      ? "gray"
-                      : passwordError
-                        ? "red"
-                        : "rgb(15, 169, 88)",
-                  },
-                  "&:hover fieldset": { borderColor: "black" },
-                  "&.Mui-focused fieldset": {
-                    borderColor: !password
-                      ? "rgb(195, 5, 5)"
-                      : passwordError
-                        ? "red"
-                        : "rgb(15, 169, 88)",
-                  },
-                },
-              }}
+              sx={styles.textField(password, passwordError)}
             />
 
             <p>
@@ -261,18 +166,11 @@ export default function LoginPage() {
               type="submit"
               color="error"
               variant="contained"
-              disabled={
-                !username || !password || passwordError || error || loading
-              }
-              sx={{
-                height: 44,
-                borderRadius: "8px",
-                textTransform: "none",
-                fontWeight: 400,
-              }}
+              disabled={!username || !password || !!passwordError || !!error || loading}
+              sx={styles.button}
             >
               {loading ? (
-                <CircularProgress size={24} sx={{ color: "white" }} />
+                <CircularProgress size={24} sx={styles.progressWhite} />
               ) : (
                 "Log in"
               )}
@@ -283,21 +181,13 @@ export default function LoginPage() {
               variant="outlined"
               color="error"
               disabled={loadingGoogle}
-              sx={{
-                height: 44,
-                borderRadius: "8px",
-                textTransform: "none",
-                fontWeight: 400,
-              }}
+              sx={styles.button}
             >
               {loadingGoogle ? (
-                <CircularProgress
-                  size={24}
-                  sx={{ color: "rgba(184,184,184,1)" }}
-                />
+                <CircularProgress size={24} sx={styles.progressGray} />
               ) : (
                 <>
-                  <GoogleIcon sx={{ marginRight: 1 }} />
+                  <GoogleIcon sx={styles.googleIcon} />
                   Sign in with Google
                 </>
               )}
@@ -308,3 +198,72 @@ export default function LoginPage() {
     </div>
   );
 }
+
+const styles = {
+  container: {
+    display: "flex",
+    flexDirection: "column",
+    justifyContent: "center",
+    alignItems: "center",
+    minHeight: "100vh",
+  },
+  formCard: {
+    display: "flex",
+    flexDirection: "column",
+    gap: "1rem",
+    width: "100%",
+    maxWidth: 400,
+    backgroundColor: "white",
+    padding: "50px",
+    borderRadius: "10px",
+    boxShadow: "0 6px 20px rgba(0, 0, 0, 0.15)",
+    border: "1px solid rgba(255, 255, 255, 0.2)",
+  },
+  button: {
+    height: 44,
+    borderRadius: "8px",
+    textTransform: "none",
+    fontWeight: 400,
+  },
+  progressWhite: {
+    color: "white",
+  },
+  progressGray: {
+    color: "rgba(184,184,184,1)",
+  },
+  googleIcon: {
+    marginRight: 1,
+  },
+  checkIcon: {
+    color: "green",
+  },
+  helperText: {
+    color: "red",
+  },
+  alertText: (success, successError) => ({
+    backgroundColor: success ? "rgba(12, 225, 111, 0.3)" : "rgba(255, 0, 0, 0.3)",
+    padding: 1,
+    color: success ? "green" : "rgb(195, 5, 5)",
+    fontWeight: 500,
+    marginBottom: "-5px",
+    transition: "all 0.5s ease",
+    opacity: successError ? 1 : 0,
+    transform: successError ? "translateY(0)" : "translateY(-10px)",
+  }),
+  textField: (value, error) => ({
+    borderRadius: "8px",
+    backgroundColor: "white",
+    "& label.Mui-focused": {
+      color: !value ? "rgb(195, 5, 5)" : error ? "red" : "rgb(15, 169, 88)",
+    },
+    "& .MuiOutlinedInput-root": {
+      "& fieldset": {
+        borderColor: !value ? "gray" : error ? "red" : "rgb(15, 169, 88)",
+      },
+      "&:hover fieldset": { borderColor: "black" },
+      "&.Mui-focused fieldset": {
+        borderColor: !value ? "rgb(195, 5, 5)" : error ? "red" : "rgb(15, 169, 88)",
+      },
+    },
+  }),
+};

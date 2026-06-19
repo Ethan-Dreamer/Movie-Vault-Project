@@ -1,44 +1,28 @@
 import React, { useState, useEffect } from "react";
-import Button from "@mui/material/Button";
-import Rating from "@mui/material/Rating";
-import CircularProgress from "@mui/material/CircularProgress";
+import { Button, Rating, CircularProgress, Box } from "@mui/material";
 import PopUp from "./PopUp";
-import RadioGroupRating, { customIcons } from "./RadioGroupRating";
+import RadioGroupRating from "./RadioGroupRating";
 
 function Result({ result, watched, loading, setOpen, fetchWatched }) {
   const [isAdded, setAdded] = useState(false);
-  const [isOpen, setOpenSuggestion] = useState(false);
+  const [isSuggestionOpen, setSuggestionOpen] = useState(false);
   const [rating, setRating] = useState(3);
   const url = "http://localhost:3000";
 
   const resultTitle = result?.title || result?.original_name;
 
   useEffect(() => {
-    if (
-      result &&
-      watched.some((item) => {
-        const movieTitle = item.movie_title;
-        return movieTitle === resultTitle;
-      })
-    ) {
-      setAdded(true);
-    } else {
-      setAdded(false);
-    }
+    if (!result) return;
+    
+    const alreadyWatched = watched.some(
+      (item) => item.movie_title === resultTitle
+    );
+    setAdded(alreadyWatched);
   }, [result, watched, resultTitle]);
 
   const addRating = async () => {
-    // setWatched((prev) =>
-    //   prev.map((item) => {
-    //     const movieTitle = item.movie?.title || item.movie?.original_name;
-    //     if (movieTitle === resultTitle) {
-    //       return { ...item, experience: rating };
-    //     }
-    //     return item;
-    //   })
-    // );
     try {
-      const res = await fetch("http://localhost:3000/api/watched/edit", {
+      const res = await fetch(`${url}/api/watched/edit`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ title: resultTitle, value: rating }),
@@ -47,131 +31,146 @@ function Result({ result, watched, loading, setOpen, fetchWatched }) {
 
       if (!res.ok) {
         const err = await res.json();
-        console.log("Failed to update rating:", err.error || res.statusText);
+        console.error("Failed to update rating:", err.error || res.statusText);
         return;
       }
 
-      console.log("Rating updated successfully!");
-      fetchWatched();
+      await fetchWatched();
       setOpen(false);
-      setOpenSuggestion(false);
+      setSuggestionOpen(false);
     } catch (error) {
-      console.log("Error editing rating from watched!");
+      console.error("Error editing rating from watched!", error);
     }
   };
 
   const addToWatched = async (e) => {
     e.preventDefault();
 
-    const response = await fetch(
-      `${url}/api/watched/search?title=${encodeURIComponent(resultTitle)}`,
-      {
-        credentials: "include",
+    try {
+      const response = await fetch(
+        `${url}/api/watched/search?title=${encodeURIComponent(resultTitle)}`,
+        { credentials: "include" }
+      );
+      const data = await response.json();
+
+      if (!data.exist) {
+        await fetch(`${url}/api/watched`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          credentials: "include",
+          body: JSON.stringify({
+            movie: result,
+            dateOfWatch: new Date().toISOString().split("T")[0],
+            experience: null,
+          }),
+        });
       }
-    );
-    const data = await response.json();
-    const exist = data.exist;
 
-
-
-    if (!exist) {
-      await fetch(`${url}/api/watched`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        credentials: "include",
-        body: JSON.stringify({
-          movie: result,
-          dateOfWatch: new Date().toISOString().split("T")[0],
-          experience: null,
-        }),
-      });
+      await fetchWatched();
+      setAdded(true);
+      setSuggestionOpen(true);
+    } catch (error) {
+      console.error("Error adding to watched:", error);
     }
-
-    // setWatched((prev) => {
-
-    //   if (exist) return prev;
-
-    //   console.log(result);
-
-    //   const newWatched = {
-    //     movie: result,
-    //     dateOfWatch: new Date().toISOString().split("T")[0],
-    //     experience: "",
-    //   };
-
-    //   return [...prev, newWatched];
-
-    // });
-
-    await fetchWatched();
-    setAdded(true);
-    setOpenSuggestion(true);
   };
 
-  if (!loading) {
+  if (loading) {
     return (
-      <div
-        style={{ display: "flex", justifyContent: "center", margin: "20px 0" }}
-      >
+      <Box sx={styles.loaderContainer}>
         <CircularProgress />
-      </div>
+      </Box>
     );
   }
 
-  if (!result) return <p>No Result Found!</p>;
+  if (!result) return <Box component="p">No Result Found!</Box>;
 
   return (
-    <div>
-      <img
+    <Box>
+      <Box
+        component="img"
         src={`https://image.tmdb.org/t/p/w500${result.backdrop_path}`}
         alt={resultTitle}
-        width="100%"
-        style={{ margin: "10px 0" }}
+        sx={styles.backdropImage}
       />
-      <h1>{resultTitle}</h1>
+      <Box component="h1">{resultTitle}</Box>
 
-      <div style={{ marginTop: "10px", marginBottom: "10px" }}>
-        <p style={{ textAlign: "justify" }}>{result.overview}</p>
+      <Box sx={styles.detailsContainer}>
+        <Box component="p" sx={styles.overviewText}>
+          {result.overview}
+        </Box>
 
-        <div style={{ marginTop: "10px" }}>
+        <Box sx={styles.ratingWrapper}>
           <Rating value={result.vote_average / 2} precision={0.1} readOnly />
-        </div>
-        <p style={{ marginTop: "10px" }}>Vote Count: {result.vote_count}</p>
-      </div>
+        </Box>
+        <Box component="p" sx={styles.voteCountText}>
+          Vote Count: {result.vote_count}
+        </Box>
+      </Box>
 
       <Button
         onClick={addToWatched}
         variant="contained"
         color="success"
-        sx={{ borderRadius: "20px", marginTop: 1 }}
+        sx={styles.actionButton}
         disabled={isAdded}
       >
         {isAdded ? "Added to watched" : "Add to watched"}
       </Button>
-      <PopUp isOpen={isOpen} onClose={() => setOpenSuggestion(false)}>
-        <div>
-          <h2>How would u like to rate this?</h2>
-          <div style={{ marginTop: "15px", marginBottom: "10px" }}>
+
+      <PopUp isOpen={isSuggestionOpen} onClose={() => setSuggestionOpen(false)}>
+        <Box>
+          <Box component="h2">How would u like to rate this?</Box>
+          <Box sx={styles.radioWrapper}>
             <RadioGroupRating
               value={rating}
-              onChange={(value) => {
-                setRating(value);
-                console.log("User picked:", value, customIcons[value].label);
-              }}
+              onChange={(value) => setRating(value)}
             />
-          </div>
+          </Box>
           <Button
-            sx={{ borderRadius: "20px", marginTop: 1 }}
+            sx={styles.actionButton}
             onClick={addRating}
             variant="contained"
             color="success"
           >
             Submit
           </Button>
-        </div>
+        </Box>
       </PopUp>
-    </div>
+    </Box>
   );
 }
+
+const styles = {
+  loaderContainer: {
+    display: "flex",
+    justifyContent: "center",
+    margin: "20px 0",
+  },
+  backdropImage: {
+    width: "100%",
+    margin: "10px 0",
+  },
+  detailsContainer: {
+    marginTop: "10px",
+    marginBottom: "10px",
+  },
+  overviewText: {
+    textAlign: "justify",
+  },
+  ratingWrapper: {
+    marginTop: "10px",
+  },
+  voteCountText: {
+    marginTop: "10px",
+  },
+  actionButton: {
+    borderRadius: "20px",
+    marginTop: 1,
+  },
+  radioWrapper: {
+    marginTop: "15px",
+    marginBottom: "10px",
+  },
+};
 
 export default Result;

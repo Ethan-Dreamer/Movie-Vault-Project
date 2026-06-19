@@ -12,6 +12,7 @@ import Stack from "@mui/material/Stack";
 export default function Header() {
   const [open, setOpen] = useState(false);
   const anchorRef = useRef(null);
+  const prevOpen = useRef(open);
 
   const handleToggle = () => {
     setOpen((prevOpen) => !prevOpen);
@@ -28,8 +29,7 @@ export default function Header() {
     }
   };
 
-  const prevOpen = React.useRef(open);
-  React.useEffect(() => {
+  useEffect(() => {
     if (prevOpen.current === true && open === false) {
       anchorRef.current.focus();
     }
@@ -37,34 +37,17 @@ export default function Header() {
   }, [open]);
 
   return (
-    <header
-      style={{ display: "flex", alignItems: "center", padding: "0 10px" }}
-    >
-      <MovieFilterOutlinedIcon
-        htmlColor="white"
-        fontSize="large"
-        sx={{ marginRight: 1 }}
-      />
+    <header>
+      <MovieFilterOutlinedIcon fontSize="large" sx={styles.filterIcon} />
       <h1 className="web-title">MovieVault</h1>
 
-      <Stack
-        direction="row"
-        spacing={2}
-        sx={{ marginLeft: "auto", zIndex: 999 }}
-      >
+      <Stack direction="row" spacing={2} sx={styles.stack}>
         <div>
           <AccountCircleIcon
             ref={anchorRef}
             onClick={handleToggle}
             fontSize="large"
-            htmlColor="white"
-            sx={{
-              cursor: "pointer",
-              transition: "transform 0.1s ease",
-              "&:hover": {
-                transform: "scale(0.9)",
-              },
-            }}
+            sx={styles.accountIcon}
           />
           <Popper
             open={open}
@@ -84,14 +67,9 @@ export default function Header() {
               >
                 <Paper>
                   <ClickAwayListener onClickAway={handleClose}>
-                    <MenuList
-                      autoFocusItem={open}
-                      onKeyDown={handleListKeyDown}
-                    >
-                      {/* <MenuItem onClick={handleClose}>WatchList</MenuItem> */}
+                    <MenuList autoFocusItem={open} onKeyDown={handleListKeyDown}>
                       <MenuItem
-                        onClick={async () => {
-                          handleClose;
+                        onClick={() => {
                           window.location.href = "http://localhost:3000/logout";
                         }}
                       >
@@ -108,3 +86,22 @@ export default function Header() {
     </header>
   );
 }
+
+const styles = {
+  filterIcon: {
+    color: "white",
+    marginRight: 1,
+  },
+  stack: {
+    marginLeft: "auto",
+    zIndex: 999,
+  },
+  accountIcon: {
+    color: "white",
+    cursor: "pointer",
+    transition: "transform 0.1s ease",
+    "&:hover": {
+      transform: "scale(0.9)",
+    },
+  },
+};

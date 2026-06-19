@@ -1,5 +1,6 @@
-import { useState, useEffect } from "react";
-import { Routes, Route } from "react-router-dom";
+import React, { useState, useEffect } from "react";
+import { Routes, Route, Navigate } from "react-router-dom";
+
 import SearchBar from "./components/SearchBar";
 import Result from "./components/Result";
 import Watched from "./components/Watched";
@@ -8,7 +9,6 @@ import Header from "./components/Header";
 import WatchedPage from "./components/WatchedPage";
 import SignUpPage from "./components/SignUpPage";
 import LoginPage from "./components/LoginPage";
-import { Navigate } from "react-router-dom";
 
 function App() {
   const [result, setResult] = useState(null);
@@ -18,26 +18,28 @@ function App() {
 
   const fetchWatched = async () => {
     try {
-      const result = await fetch("http://localhost:3000/api/watched", {
+      const res = await fetch("http://localhost:3000/api/watched", {
         credentials: "include",
       });
-      const data = await result.json();
-      if (data.watched && data.watched.length > 0) {
-        setWatched(data.watched || []);
-      }
+      const data = await res.json();
+      setWatched(data.watched || []);
     } catch (error) {
-      console.log("Error fetching watched movies: ", error);
+      console.error("Error fetching watched movies: ", error);
     }
   };
 
   useEffect(() => {
     const init = async () => {
-      const authRes = await fetch("http://localhost:3000/check-auth", {
-        credentials: "include",
-      });
-      const authData = await authRes.json();
-      if (authData.user) {
-        await fetchWatched();
+      try {
+        const authRes = await fetch("http://localhost:3000/check-auth", {
+          credentials: "include",
+        });
+        const authData = await authRes.json();
+        if (authData.user) {
+          await fetchWatched();
+        }
+      } catch (error) {
+        console.error("Error checking auth status: ", error);
       }
     };
     init();
@@ -68,7 +70,6 @@ function App() {
                 <Result
                   fetchWatched={fetchWatched}
                   result={result}
-                  setWatched={setWatched}
                   watched={watched}
                   loading={loading}
                   setOpen={setOpen}
@@ -80,7 +81,11 @@ function App() {
         <Route
           path="/watched"
           element={
-            <WatchedPage watched={watched} setWatched={setWatched} fetchWatched={fetchWatched} />
+            <WatchedPage
+              watched={watched}
+              setWatched={setWatched}
+              fetchWatched={fetchWatched}
+            />
           }
         />
       </Routes>

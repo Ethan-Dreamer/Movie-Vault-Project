@@ -1,4 +1,4 @@
-import * as React from 'react';
+import React from 'react';
 import PropTypes from 'prop-types';
 import { styled } from '@mui/material/styles';
 import Rating from '@mui/material/Rating';
@@ -14,7 +14,7 @@ const StyledRating = styled(Rating)(({ theme }) => ({
   },
 }));
 
-const customIcons = {
+export const customIcons = {
   1: {
     icon: <SentimentVeryDissatisfiedIcon color="error" />,
     label: 'Very Dissatisfied',
@@ -39,25 +39,22 @@ const customIcons = {
 
 function IconContainer(props) {
   const { value, ...other } = props;
-  return <span {...other}>{customIcons[value].icon}</span>;
+  return <span {...other}>{customIcons[value]?.icon}</span>;
 }
 
 IconContainer.propTypes = {
   value: PropTypes.number.isRequired,
 };
 
-export default function RadioGroupRating({value,onChange}) {
+export default function RadioGroupRating({ value, onChange }) {
   return (
     <StyledRating
       name="highlight-selected-only"
       value={value}
-      onChange={(event,newValue) => onChange?.(newValue)}
-      defaultValue={3}
+      onChange={(event, newValue) => onChange?.(newValue)}
       IconContainerComponent={IconContainer}
-      getLabelText={(value) => customIcons[value].label}
+      getLabelText={(val) => customIcons[val]?.label || ''}
       highlightSelectedOnly
     />
   );
 }
-
-export {customIcons};
