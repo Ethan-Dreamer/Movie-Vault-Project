@@ -1,29 +1,25 @@
-MovieVault 🎬
+# MovieVault 🎬
+
 Welcome to MovieVault, a personal movie tracking application built to help you manage your watchlist and keep track of your ratings with style.
 
-The Tech Stack
+## The Tech Stack
 This project is built with a modern, modular architecture:
 
-Frontend: React.js, Material-UI (MUI), and React Router.
+* **Frontend:** React.js, Material-UI (MUI), and React Router.
+* **Architecture:** Component-driven development with isolated styling objects for clean, maintainable code.
+* **Backend:** Node.js/Express
+* **Database:** PostgreSQL
 
-Architecture: Component-driven development with isolated styling objects for clean, maintainable code.
+## Key Features
+* **User Authentication:** Secure login and registration with Google Auth integration.
+* **Smart Search:** Real-time movie suggestions as you type.
+* **Rating System:** Custom visual feedback using MUI-based `RadioGroupRating` and `Rating` components.
+* **Interactive UI:** Clean, responsive design built with a mobile-first approach.
 
-Backend: Node.js/Express
-
-Database: PostgreSQL
-
-Key Features
-User Authentication: Secure login and registration with Google Auth integration.
-
-Smart Search: Real-time movie suggestions as you type.
-
-Rating System: Custom visual feedback using MUI-based RadioGroupRating and Rating components.
-
-Interactive UI: Clean, responsive design built with a mobile-first approach.
-
-Project Structure
+## Project Structure
 We follow a clean, component-first design pattern:
 
+```text
 /src
   /assets        # Images and global styles
   /components    # UI components (Header, MyCard, SearchBar, etc.)
@@ -32,7 +28,7 @@ We follow a clean, component-first design pattern:
 
 Getting Started
 Clone the repo:
-git clone [your-repo-url]
+git clone https://github.com/Ethan-Dreamer/Movie-Vault-Project.git
 
 Install dependencies:
 npm install
