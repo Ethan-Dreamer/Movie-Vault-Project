@@ -1,4 +1,5 @@
 import React, { useEffect, useState, useRef } from "react";
+import { useNavigate } from "react-router-dom";
 import MovieFilterOutlinedIcon from "@mui/icons-material/MovieFilterOutlined";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 import ClickAwayListener from "@mui/material/ClickAwayListener";
@@ -13,6 +14,7 @@ export default function Header() {
   const [open, setOpen] = useState(false);
   const anchorRef = useRef(null);
   const prevOpen = useRef(open);
+  const navigate = useNavigate();
 
   const handleToggle = () => {
     setOpen((prevOpen) => !prevOpen);
@@ -68,6 +70,9 @@ export default function Header() {
                 <Paper>
                   <ClickAwayListener onClickAway={handleClose}>
                     <MenuList autoFocusItem={open} onKeyDown={handleListKeyDown}>
+                      <MenuItem onClick={()=>navigate("/profile")}>
+                        Profile
+                      </MenuItem>
                       <MenuItem
                         onClick={() => {
                           window.location.href = "http://localhost:3000/logout";

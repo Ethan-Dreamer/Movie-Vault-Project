@@ -101,7 +101,6 @@ header {
   padding: 10px 20px 10px 20px;
   background-color: rgb(195, 5, 5);
   box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.3);
-  margin-bottom: 20px;
 }
 
 .web-title {
@@ -181,10 +180,11 @@ form {
 }
 
 .watched-short-title {
+  font-size: 12px;
   display: flex;
   align-items: center;
-  padding: 20px 0 20px 0;
-  color: white;
+  padding: 5px 0 5px 0;
+  color: rgb(195, 5, 5);
 }
 
 .watched-list {
@@ -252,4 +252,188 @@ form {
     url("./assets/login-img.jpg") center/cover no-repeat fixed;
   height: 100vh;
   width: 100%;
+}
+
+:root {
+  --profile-primary-red: #c30505;
+  --profile-bg: #fff;
+  --profile-text-dark: #333;
+}
+
+.profile-page {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  background-color: var(--profile-bg);
+  overflow-x: hidden;
+}
+
+.profile-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 16px;
+  background-color: var(--profile-bg);
+  border-bottom: 1px solid #eee; 
+}
+
+.header-icon {
+  color: var(--profile-primary-red) !important;
+}
+
+.header-title-group {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.header-title {
+  font-weight: 600 !important;
+  color: var(--profile-primary-red) !important;
+  font-size: 1.25rem !important;
+}
+
+.profile-content {
+  flex: 1; 
+  display: flex;
+  justify-content: center; 
+  padding-top: 24px;
+  padding-bottom: 40px;
+}
+
+.profile-form {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+
+.profile-avatar-section {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 32px;
+}
+
+.profile-avatar-wrapper {
+  position: relative;
+}
+
+.profile-avatar {
+  width: 140px !important; 
+  height: 140px !important;
+  font-size: 3rem !important;
+  background-color: var(--profile-primary-red) !important;
+  box-shadow: 0 4px 16px rgba(195, 5, 5, 0.2);
+  transition: transform 0.3s ease;
+}
+
+.profile-avatar-wrapper:hover .profile-avatar {
+  transform: scale(1.02); 
+}
+
+.edit-avatar-btn {
+  position: absolute !important;
+  bottom: 0px;
+  right: 0px;
+  background-color: var(--profile-bg) !important;
+  border: 2px solid var(--profile-bg) !important;
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.15) !important;
+  transition: all 0.2s ease !important;
+}
+
+.edit-avatar-btn:hover {
+  background-color: #f0f0f0 !important;
+  color: var(--profile-primary-red) !important;
+  transform: translateY(-1px);
+}
+
+.profile-details {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.profile-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 12px 0;
+  border-bottom: 1px solid #f5f5f5; 
+}
+
+.profile-label {
+  width: 110px;
+  flex-shrink: 0;
+  font-weight: 600 !important;
+  color: var(--profile-primary-red) !important; 
+}
+
+.profile-value-group {
+  display: flex;
+  align-items: center;
+  flex-grow: 1;
+  justify-content: space-between;
+}
+
+.profile-value {
+  font-weight: 500 !important;
+  color: var(--profile-text-dark) !important;
+}
+
+.user-value {
+  opacity: 0.8; 
+}
+
+/* Icon & Button Styles */
+.edit-field-btn {
+  color: rgba(0, 0, 0, 0.3) !important;
+  transition: all 0.2s ease !important;
+}
+
+.edit-field-btn:hover {
+  color: var(--profile-primary-red) !important;
+  background-color: rgba(195, 5, 5, 0.08) !important;
+  transform: scale(1.05);
+}
+
+.watched-stats {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.movie-icon {
+  color: var(--profile-primary-red);
+  font-size: 22px !important;
+}
+
+/* Material UI TextField Overrides */
+.profile-textfield {
+  flex-grow: 1;
+  margin-right: 16px !important;
+}
+
+.profile-textfield .MuiInput-root:before {
+  border-bottom: 1px solid rgba(195, 5, 5, 0.3) !important;
+}
+
+.profile-textfield .MuiInput-root:after {
+  border-bottom: 2px solid var(--profile-primary-red) !important;
+}
+
+.profile-save-btn {
+  height: 54px !important;
+  border-radius: 12px !important;
+  text-transform: none !important;
+  font-weight: 600 !important;
+  font-size: 1.1rem !important;
+  margin-top: 40px !important;
+  box-shadow: 0 4px 14px rgba(195, 5, 5, 0.3) !important;
+  transition: all 0.2s ease !important;
+  width: 100%; /* Ensure it spans the container on mobile */
+}
+
+.profile-save-btn:hover {
+  box-shadow: 0 6px 20px rgba(195, 5, 5, 0.5) !important;
+  transform: translateY(-1px);
 }

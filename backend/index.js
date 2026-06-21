@@ -200,7 +200,7 @@ app.patch("/api/watched/edit", isAuthenticated, async (req, res) => {
   }
 });
 
-app.post("/api/search", async (req, res) => {
+app.post("/api/search", isAuthenticated, async (req, res) => {
   const { movie } = req.body;
   if (!movie) return res.status(400).json({ error: "Movie name is required!" });
 
@@ -224,6 +224,21 @@ app.post("/api/search", async (req, res) => {
   } catch (error) {
     console.error("External search error:", error);
     return res.status(500).json({ error: "Internal server error while fetching details" });
+  }
+});
+
+app.post("/api/profile/save", isAuthenticated, async (req, res) => {
+  const { name } = req.body;
+  const userId = req.user.id;
+
+  if (!name) return res.status(400).json({ success: false, message: "Name is required" });
+
+  try {
+    await db.query("UPDATE users SET name=$1 WHERE id=$2;", [name, userId]);
+    return res.json({ success: true, message: "Profile updated successfully!" });
+  } catch (error) {
+    console.error("Profile update error:", error);
+    return res.status(500).json({ success: false, message: "Internal server error while updating profile" });
   }
 });
 

@@ -4,15 +4,16 @@ import LocalMoviesRoundedIcon from "@mui/icons-material/LocalMoviesRounded";
 import Button from "@mui/material/Button";
 import Box from "@mui/material/Box";
 import MyCard from "./MyCard";
+import { fontSize } from "@mui/system";
 
 export default function Watched({ watched, fetchWatched, setWatched }) {
   const navigate = useNavigate();
 
   return (
     <Box className="watched-list-short">
-      <Box className="watched-short-title">
+      <Box className="watched-short-title" sx={styles.header}>
         <LocalMoviesRoundedIcon fontSize="large" sx={styles.icon} />
-        <Box component="h2">Watched Movies:</Box>
+        <Box component="h2" sx={styles.headerTitle}>Watched Movies:</Box>
         <Button
           variant="outlined"
           onClick={() => navigate("/watched")}
@@ -48,9 +49,18 @@ export default function Watched({ watched, fetchWatched, setWatched }) {
 }
 
 const styles = {
+  header:{
+    padding: "10px 0 10px 0",
+  },
+  headerTitle:{
+    color: "white",
+    fontSize: "large",
+  },
   icon: {
     color: "white",
     marginRight: 1,
+    marginLeft: "5px",
+    fontSize: "23px",
   },
   seeAllButton: {
     marginLeft: "auto",

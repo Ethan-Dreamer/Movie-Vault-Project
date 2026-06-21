@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Routes, Route, Navigate } from "react-router-dom";
 
+import ProtectedRoute from "./components/ProtectedRoute";
 import SearchBar from "./components/SearchBar";
 import Result from "./components/Result";
 import Watched from "./components/Watched";
@@ -9,12 +10,15 @@ import Header from "./components/Header";
 import WatchedPage from "./components/WatchedPage";
 import SignUpPage from "./components/SignUpPage";
 import LoginPage from "./components/LoginPage";
+import Profile from "./components/Profile";
 
 function App() {
   const [result, setResult] = useState(null);
   const [watched, setWatched] = useState([]);
   const [isOpen, setOpen] = useState(false);
   const [loading, setLoaded] = useState(false);
+  const [loadingUser, setLoadedUser] = useState(true);
+  const [user, setUser] = useState(null);
 
   const fetchWatched = async () => {
     try {
@@ -28,21 +32,21 @@ function App() {
     }
   };
 
+  const checkAuth = async () => {
+    try {
+      const authRes = await fetch("http://localhost:3000/check-auth", { credentials: "include", cache: "no-store", });
+      const authData = await authRes.json();
+      setUser(authData.user || null);
+      if (authData.user) await fetchWatched();
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setLoadedUser(false);
+    }
+  };
+
   useEffect(() => {
-    const init = async () => {
-      try {
-        const authRes = await fetch("http://localhost:3000/check-auth", {
-          credentials: "include",
-        });
-        const authData = await authRes.json();
-        if (authData.user) {
-          await fetchWatched();
-        }
-      } catch (error) {
-        console.error("Error checking auth status: ", error);
-      }
-    };
-    init();
+    checkAuth();
   }, []);
 
   return (
@@ -55,37 +59,55 @@ function App() {
           path="/home"
           element={
             <>
-              <Header />
-              <SearchBar
-                setResult={setResult}
-                setOpen={setOpen}
-                setLoaded={setLoaded}
-              />
-              <Watched
-                watched={watched}
-                fetchWatched={fetchWatched}
-                setWatched={setWatched}
-              />
-              <PopUp isOpen={isOpen} onClose={() => setOpen(false)}>
-                <Result
-                  fetchWatched={fetchWatched}
-                  result={result}
-                  watched={watched}
-                  loading={loading}
+              <ProtectedRoute user={user} loading={loadingUser}>
+                <Header />
+                <SearchBar
+                  setResult={setResult}
                   setOpen={setOpen}
+                  setLoaded={setLoaded}
                 />
-              </PopUp>
+                <Watched
+                  watched={watched}
+                  fetchWatched={fetchWatched}
+                  setWatched={setWatched}
+                />
+                <PopUp isOpen={isOpen} onClose={() => setOpen(false)}>
+                  <Result
+                    fetchWatched={fetchWatched}
+                    result={result}
+                    watched={watched}
+                    loading={loading}
+                    setOpen={setOpen}
+                  />
+                </PopUp>
+              </ProtectedRoute>
+
             </>
           }
         />
         <Route
           path="/watched"
           element={
-            <WatchedPage
-              watched={watched}
-              setWatched={setWatched}
-              fetchWatched={fetchWatched}
-            />
+            <ProtectedRoute user={user} loading={loadingUser}>
+              <Header />
+              <WatchedPage
+                watched={watched}
+                setWatched={setWatched}
+                fetchWatched={fetchWatched}
+              />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/profile"
+          element={
+            <ProtectedRoute user={user} loading={loadingUser}>
+              <Header />
+              <Profile
+                user={user}
+                watched={watched}
+              />
+            </ProtectedRoute>
           }
         />
       </Routes>

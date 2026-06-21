@@ -54,7 +54,7 @@ export default function LoginPage() {
 
       if (data.success) {
         setSuccessError(data.message);
-        navigate("/home");
+        window.location.href = "/home";
       } else {
         setSuccessError(data.message);
       }
