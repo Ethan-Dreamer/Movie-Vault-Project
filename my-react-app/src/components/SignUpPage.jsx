@@ -94,7 +94,7 @@ export default function SignUpPage() {
                 const value = e.target.value;
                 setUsername(value);
 
-                if (!/^[a-zA-Z0-9._]*$/.test(value)) {
+                if (!/^[a-zA-Z0-9._@]*$/.test(value)) {
                   setError("invalidChars");
                 } else if (value.length < 4) {
                   setError("lengthError");

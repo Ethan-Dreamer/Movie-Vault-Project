@@ -9,8 +9,9 @@ import Popper from "@mui/material/Popper";
 import MenuItem from "@mui/material/MenuItem";
 import MenuList from "@mui/material/MenuList";
 import Stack from "@mui/material/Stack";
+import { Avatar } from "@mui/material";
 
-export default function Header() {
+export default function Header({ user }) {
   const [open, setOpen] = useState(false);
   const anchorRef = useRef(null);
   const prevOpen = useRef(open);
@@ -45,12 +46,21 @@ export default function Header() {
 
       <Stack direction="row" spacing={2} sx={styles.stack}>
         <div>
-          <AccountCircleIcon
-            ref={anchorRef}
-            onClick={handleToggle}
-            fontSize="large"
-            sx={styles.accountIcon}
-          />
+          {user?.profile_pic ? (
+            <Avatar
+              ref={anchorRef}
+              src={user.profile_pic}
+              onClick={handleToggle}
+              sx={styles.profileIcon} // Fixed reference
+            />
+          ) : (
+            <AccountCircleIcon
+              ref={anchorRef}
+              onClick={handleToggle}
+              fontSize="large"
+              sx={styles.accountIcon}
+            />
+          )}
           <Popper
             open={open}
             anchorEl={anchorRef.current}
@@ -70,7 +80,7 @@ export default function Header() {
                 <Paper>
                   <ClickAwayListener onClickAway={handleClose}>
                     <MenuList autoFocusItem={open} onKeyDown={handleListKeyDown}>
-                      <MenuItem onClick={()=>navigate("/profile")}>
+                      <MenuItem onClick={() => navigate("/profile")}>
                         Profile
                       </MenuItem>
                       <MenuItem
@@ -104,6 +114,16 @@ const styles = {
   accountIcon: {
     color: "white",
     cursor: "pointer",
+    transition: "transform 0.1s ease",
+    "&:hover": {
+      transform: "scale(0.9)",
+    },
+  },
+  profileIcon: {
+    cursor: "pointer",
+    width: 40,
+    height: 40,
+    border: '2px solid white',
     transition: "transform 0.1s ease",
     "&:hover": {
       transform: "scale(0.9)",

@@ -228,13 +228,13 @@ app.post("/api/search", isAuthenticated, async (req, res) => {
 });
 
 app.post("/api/profile/save", isAuthenticated, async (req, res) => {
-  const { name } = req.body;
+  const { name,avatar_url } = req.body;
   const userId = req.user.id;
 
   if (!name) return res.status(400).json({ success: false, message: "Name is required" });
 
   try {
-    await db.query("UPDATE users SET name=$1 WHERE id=$2;", [name, userId]);
+    await db.query("UPDATE users SET name=$1, profile_pic=$2 WHERE id=$3;", [name,avatar_url, userId]);
     return res.json({ success: true, message: "Profile updated successfully!" });
   } catch (error) {
     console.error("Profile update error:", error);

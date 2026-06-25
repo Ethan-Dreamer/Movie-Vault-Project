@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { AppProvider } from "@toolpad/core/AppProvider";
-import { Button, TextField, Box, Typography, InputAdornment, CircularProgress } from "@mui/material";
+import { Button, TextField, Box, Typography, InputAdornment, CircularProgress, Snackbar, Alert } from "@mui/material";
 import { createTheme } from "@mui/material/styles";
 import GoogleIcon from "@mui/icons-material/Google";
 import CheckIcon from "@mui/icons-material/Check";
@@ -21,19 +21,22 @@ export default function LoginPage() {
   const [error, setError] = useState("");
   const [password, setPassword] = useState("");
   const [passwordError, setPasswordError] = useState("");
-  const [successError, setSuccessError] = useState("");
-  const [success, setSuccess] = useState(false);
   const [loading, setLoading] = useState(false);
   const [loadingGoogle, setGoogleLoading] = useState(false);
-
+  const [showPassword, setShowPassword] = useState(false);
+  const [snackbar, setSnackbar] = useState({ open: false, message: "", severity: "error" });
   const navigate = useNavigate();
+
+  const handleCloseSnackbar = (event, reason) => {
+    if (reason === "clickaway") return;
+    setSnackbar((prev) => ({ ...prev, open: false }));
+  };
 
   const signInWithGoogle = async () => {
     try {
       setGoogleLoading(true);
       window.location.href = "http://localhost:3000/auth/google";
     } catch (error) {
-      console.error("Error while signing in: ", error);
       setGoogleLoading(false);
     }
   };
@@ -50,17 +53,16 @@ export default function LoginPage() {
       });
       const data = await result.json();
       setLoading(false);
-      setSuccess(data.success);
 
       if (data.success) {
-        setSuccessError(data.message);
+        setSnackbar({ open: true, message: data.message, severity: "success" });
         window.location.href = "/home";
       } else {
-        setSuccessError(data.message);
+        setSnackbar({ open: true, message: data.message, severity: "error" });
       }
     } catch (error) {
       setLoading(false);
-      console.error("Error while logging in!");
+      setSnackbar({ open: true, message: "Error while logging in!", severity: "error" });
     }
   };
 
@@ -73,16 +75,6 @@ export default function LoginPage() {
               Log In
             </Typography>
 
-            {successError && (
-              <Typography
-                variant="body1"
-                align="center"
-                sx={styles.alertText(success, successError)}
-              >
-                {successError}
-              </Typography>
-            )}
-
             <TextField
               label="Username"
               value={username}
@@ -90,13 +82,12 @@ export default function LoginPage() {
                 const value = e.target.value;
                 setUsername(value);
 
-                if (!/^[a-zA-Z0-9._]*$/.test(value)) {
+                if (!/^[a-zA-Z0-9._@]*$/.test(value)) {
                   setError("invalidChars");
                 } else if (value.length < 4) {
                   setError("lengthError");
-                }
-                else if (/[A-Z]/.test(value)) {
-                  setError("capitalError")
+                } else if (/[A-Z]/.test(value)) {
+                  setError("capitalError");
                 } else {
                   setError("");
                 }
@@ -106,8 +97,10 @@ export default function LoginPage() {
                 error === "lengthError"
                   ? "At least 4 characters allowed!"
                   : error === "invalidChars"
-                    ? "Only letters, numbers, _ , and . allowed"
-                    : error === "capitalError" ? "No capital letters allowed for username!" : " "
+                  ? "Only letters, numbers, _ , and . allowed"
+                  : error === "capitalError"
+                  ? "No capital letters allowed for username!"
+                  : " "
               }
               FormHelperTextProps={{ sx: styles.helperText }}
               fullWidth
@@ -194,6 +187,18 @@ export default function LoginPage() {
             </Button>
           </Box>
         </Box>
+
+        <Snackbar
+          open={snackbar.open}
+          autoHideDuration={4000}
+          onClose={handleCloseSnackbar}
+          anchorOrigin={{ vertical: "top", horizontal: "right" }}
+        >
+          <Alert onClose={handleCloseSnackbar} severity={snackbar.severity} variant="filled" sx={{ width: "100%" }}>
+            {snackbar.message}
+          </Alert>
+        </Snackbar>
+
       </AppProvider>
     </div>
   );
@@ -240,16 +245,6 @@ const styles = {
   helperText: {
     color: "red",
   },
-  alertText: (success, successError) => ({
-    backgroundColor: success ? "rgba(12, 225, 111, 0.3)" : "rgba(255, 0, 0, 0.3)",
-    padding: 1,
-    color: success ? "green" : "rgb(195, 5, 5)",
-    fontWeight: 500,
-    marginBottom: "-5px",
-    transition: "all 0.5s ease",
-    opacity: successError ? 1 : 0,
-    transform: successError ? "translateY(0)" : "translateY(-10px)",
-  }),
   textField: (value, error) => ({
     borderRadius: "8px",
     backgroundColor: "white",

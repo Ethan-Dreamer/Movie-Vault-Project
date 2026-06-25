@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
 import { Routes, Route, Navigate } from "react-router-dom";
-
 import ProtectedRoute from "./components/ProtectedRoute";
 import SearchBar from "./components/SearchBar";
 import Result from "./components/Result";
@@ -60,7 +59,7 @@ function App() {
           element={
             <>
               <ProtectedRoute user={user} loading={loadingUser}>
-                <Header />
+                <Header user={user} />
                 <SearchBar
                   setResult={setResult}
                   setOpen={setOpen}
@@ -89,7 +88,7 @@ function App() {
           path="/watched"
           element={
             <ProtectedRoute user={user} loading={loadingUser}>
-              <Header />
+              <Header user={user} />
               <WatchedPage
                 watched={watched}
                 setWatched={setWatched}
@@ -102,7 +101,7 @@ function App() {
           path="/profile"
           element={
             <ProtectedRoute user={user} loading={loadingUser}>
-              <Header />
+              <Header user={user} />
               <Profile
                 user={user}
                 watched={watched}

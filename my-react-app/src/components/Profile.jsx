@@ -12,9 +12,10 @@ export default function Profile({ user, watched = [] }) {
 
     const [name, setName] = useState(user?.name || "");
     const [editingName, setEditingName] = useState(false);
-    const [avatarPreview, setAvatarPreview] = useState(user?.avatar_url || null);
+    const [avatarPreview, setAvatarPreview] = useState(user?.profile_pic || null);
     const [saving, setSaving] = useState(false);
     const [snackbar, setSnackbar] = useState({ open: false, message: "", severity: "success" });
+    const [profileImg, setProfileImage] = useState(null);
 
     const handleAvatarClick = () => {
         fileInputRef.current?.click();
@@ -23,36 +24,64 @@ export default function Profile({ user, watched = [] }) {
     const handleAvatarChange = (e) => {
         const file = e.target.files?.[0];
         if (!file) return;
+        
         setAvatarPreview(URL.createObjectURL(file));
-        // TODO: upload `file` to backend
+        setProfileImage(file);
     };
 
     const handleSave = async (e) => {
         e.preventDefault();
         try {
             setSaving(true);
+            let finalAvatarUrl = user?.avatar_url || null;
+
+            if (profileImg) {
+                const formData = new FormData();
+                formData.append("file", profileImg);
+                formData.append("upload_preset", "my-present"); 
+                formData.append("cloud_name", "daol4gyo7");
+
+                const cloudinaryRes = await fetch(
+                    `https://api.cloudinary.com/v1_1/daol4gyo7/image/upload`,
+                    {
+                        method: "POST",
+                        body: formData,
+                    }
+                );
+
+                const cloudinaryData = await cloudinaryRes.json();
+                
+                if (cloudinaryData.secure_url) {
+                    finalAvatarUrl = cloudinaryData.secure_url;
+                } else {
+                    throw new Error("Cloudinary upload failed");
+                }
+            }
+
             const result = await fetch("http://localhost:3000/api/profile/save", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 credentials: "include",
-                body: JSON.stringify({ name }),
+                body: JSON.stringify({ 
+                    name: name, 
+                    avatar_url: finalAvatarUrl 
+                }),
             });
+            
             const data = await result.json();
 
             if (data.success) {
                 setSnackbar({ open: true, message: data.message || "Profile updated successfully!", severity: "success" });
                 setEditingName(false);
+                setProfileImage(null);
             } else {
                 setSnackbar({ open: true, message: data.message || "Failed to update profile.", severity: "error" });
             }
         } catch (error) {
-            console.error("Error saving profile", error);
             setSnackbar({ open: true, message: "Something went wrong. Please try again.", severity: "error" });
-        }
-        finally {
+        } finally {
             setSaving(false);
         }
-
     };
 
     const handleCloseSnackbar = (_, reason) => {
@@ -65,7 +94,6 @@ export default function Profile({ user, watched = [] }) {
             <SubHeader title={"Profile"} />
             <Container maxWidth="sm" className="profile-content">
                 <form onSubmit={handleSave} className="profile-form">
-
                     <div className="profile-avatar-section">
                         <div className="profile-avatar-wrapper">
                             <Avatar src={avatarPreview} className="profile-avatar">
