@@ -32,9 +32,21 @@ app.use(
   })
 );
 
+const allowedOrigins = [
+  "https://movie-vault.vercel.app", 
+  "http://localhost:5173"          
+];
+
 app.use(
   cors({
-    origin: "https://movie-vault.vercel.app",
+    origin: function (origin, callback) {
+      // Allow requests with no origin (like mobile apps or curl requests)
+      if (!origin || allowedOrigins.indexOf(origin) !== -1) {
+        callback(null, true);
+      } else {
+        callback(new Error("Not allowed by CORS"));
+      }
+    },
     credentials: true,
   })
 );
