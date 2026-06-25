@@ -7,6 +7,7 @@ import passport from "passport";
 import GoogleStrategy from "passport-google-oauth2";
 import { Strategy } from "passport-local";
 import session from "express-session";
+import createMemoryStore from "memorystore";
 
 dotenv.config();
 
@@ -17,6 +18,9 @@ const token = process.env.TOKEN;
 
 app.use(
   session({
+    store: new (createMemoryStore(session))({
+      checkPeriod: 86400000, // prune expired entries every 24h
+    }),
     secret: process.env.SESSION_SECRET || "secret",
     resave: false,
     saveUninitialized: false,
@@ -298,4 +302,4 @@ app.get("/check-auth", (req, res) => {
   return res.json({ user: req.user || null });
 });
 
-app.listen(port, () => console.log(`Server running on http://localhost:${port}`));
+app.listen(port, () => console.log(`Server is running on http://localhost:${port}`));
