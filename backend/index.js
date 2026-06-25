@@ -30,7 +30,7 @@ app.use(
 
 app.use(
   cors({
-    origin: "http://localhost:5173",
+    origin: "https://movie-vault.vercel.app",
     credentials: true,
   })
 );
@@ -41,11 +41,7 @@ app.use(passport.initialize());
 app.use(passport.session());
 
 const db = new pg.Client({
-  user: process.env.USER,
-  host: process.env.HOST,
-  database: process.env.DATABASE_NAME,
-  password: process.env.DATABASE_PASS,
-  port: 5432,
+  connectionString: process.env.DATABASE_URL,
 });
 
 db.connect().catch((err) => console.error("Database connection error:", err));
