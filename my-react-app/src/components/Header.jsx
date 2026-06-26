@@ -10,6 +10,7 @@ import MenuItem from "@mui/material/MenuItem";
 import MenuList from "@mui/material/MenuList";
 import Stack from "@mui/material/Stack";
 import { Avatar } from "@mui/material";
+import { API_BASE_URL } from "../config";
 
 export default function Header({ user }) {
   const [open, setOpen] = useState(false);
@@ -85,7 +86,7 @@ export default function Header({ user }) {
                       </MenuItem>
                       <MenuItem
                         onClick={() => {
-                          window.location.href = "http://localhost:3000/logout";
+                          window.location.href = `${API_BASE_URL}/logout`;
                         }}
                       >
                         Logout
