@@ -73,16 +73,16 @@ app.get("/auth/google", passport.authenticate("google", { scope: ["profile", "em
 
 app.get(
   "/auth/google/movievault",
-  passport.authenticate("google", { failureRedirect: "http://localhost:5173/login" }),
+  passport.authenticate("google", { failureRedirect: "https://movie-vault-project.vercel.app/login" }),
   (req, res) => {
-    res.redirect("http://localhost:5173/home");
+    res.redirect("https://movie-vault-project.vercel.app/home");
   }
 );
 
 app.get("/logout", (req, res, next) => {
   req.logout((err) => {
     if (err) return next(err);
-    return res.redirect("http://localhost:5173/login");
+    return res.redirect("https://movie-vault-project.vercel.app/login");
   });
 });
 
