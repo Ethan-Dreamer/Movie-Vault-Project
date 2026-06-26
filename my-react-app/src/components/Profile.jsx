@@ -75,6 +75,7 @@ export default function Profile({ user, watched = [] }) {
                 setSnackbar({ open: true, message: data.message || "Profile updated successfully!", severity: "success" });
                 setEditingName(false);
                 setProfileImage(null);
+                window.location.reload();
             } else {
                 setSnackbar({ open: true, message: data.message || "Failed to update profile.", severity: "error" });
             }
