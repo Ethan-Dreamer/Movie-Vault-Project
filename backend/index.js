@@ -10,11 +10,11 @@ import session from "express-session";
 import createMemoryStore from "memorystore";
 
 dotenv.config();
-app.set("trust proxy", 1);
 const app = express();
 const port = 3000;
 const saltRounds = 10;
 const token = process.env.TOKEN;
+app.set("trust proxy", 1);
 
 app.use(
   session({
