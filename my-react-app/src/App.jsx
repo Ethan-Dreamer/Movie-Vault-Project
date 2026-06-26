@@ -10,6 +10,7 @@ import WatchedPage from "./components/WatchedPage";
 import SignUpPage from "./components/SignUpPage";
 import LoginPage from "./components/LoginPage";
 import Profile from "./components/Profile";
+import { API_URL } from "./config";
 
 function App() {
   const [result, setResult] = useState(null);
@@ -21,7 +22,7 @@ function App() {
 
   const fetchWatched = async () => {
     try {
-      const res = await fetch("http://localhost:3000/api/watched", {
+      const res = await fetch(`${API_URL}/api/watched`, {
         credentials: "include",
       });
       const data = await res.json();
@@ -33,7 +34,7 @@ function App() {
 
   const checkAuth = async () => {
     try {
-      const authRes = await fetch("http://localhost:3000/check-auth", { credentials: "include", cache: "no-store", });
+      const authRes = await fetch(`${API_URL}/check-auth`, { credentials: "include", cache: "no-store", });
       const authData = await authRes.json();
       setUser(authData.user || null);
       if (authData.user) await fetchWatched();

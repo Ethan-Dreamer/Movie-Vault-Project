@@ -3,7 +3,7 @@ import Rating from "@mui/material/Rating";
 import Button from "@mui/material/Button";
 import DeleteIcon from "@mui/icons-material/Delete";
 import { useMediaQuery, Box } from "@mui/material";
-
+import {API_URL} from "../config";
 import PopUp from "./PopUp";
 import RadioGroupRating, { customIcons } from "./RadioGroupRating";
 
@@ -26,7 +26,7 @@ function MyCard({
   const handleDelete = async () => {
     const title = movie.movie_title;
     try {
-      const res = await fetch("http://localhost:3000/api/watched/delete", {
+      const res = await fetch(`${API_URL}/api/watched/delete`, {
         method: "DELETE",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ title }),
@@ -51,7 +51,7 @@ function MyCard({
   const handleEditRating = async () => {
     const title = movie.movie_title;
     try {
-      const res = await fetch("http://localhost:3000/api/watched/edit", {
+      const res = await fetch(`${API_URL}/api/watched/edit`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ title, value: rating }),

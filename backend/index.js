@@ -33,7 +33,7 @@ app.use(
 );
 
 const allowedOrigins = [
-  "https://movie-vault.vercel.app", 
+  "https://movie-vault-project.vercel.app", 
   "http://localhost:5173"          
 ];
 

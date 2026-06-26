@@ -3,11 +3,12 @@ import TextField from "@mui/material/TextField";
 import Button from "@mui/material/Button";
 import Box from "@mui/material/Box";
 import MyCard from "./MyCard";
+import { API_URL } from "../config";
 
 function SearchBar({ setResult, setOpen, setLoaded }) {
   const [suggestions, setSuggestions] = useState([]);
   const [movie, setMovie] = useState("");
-  const url = "http://localhost:3000";
+  const url = `${API_URL}`;
   const timeoutRef = useRef(null);
   const containerRef = useRef(null);
 

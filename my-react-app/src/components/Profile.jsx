@@ -6,6 +6,7 @@ import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import { Button, Box, TextField, Avatar, IconButton, Typography, CircularProgress, Container, Snackbar, Alert } from "@mui/material";
 import SubHeader from "./SubHeader";
+import {API_URL} from "../config";
 
 export default function Profile({ user, watched = [] }) {
     const fileInputRef = useRef(null);
@@ -58,7 +59,7 @@ export default function Profile({ user, watched = [] }) {
                 }
             }
 
-            const result = await fetch("http://localhost:3000/api/profile/save", {
+            const result = await fetch(`${API_URL}/api/profile/save`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 credentials: "include",

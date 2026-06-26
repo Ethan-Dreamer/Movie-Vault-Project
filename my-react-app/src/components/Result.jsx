@@ -2,12 +2,13 @@ import React, { useState, useEffect } from "react";
 import { Button, Rating, CircularProgress, Box } from "@mui/material";
 import PopUp from "./PopUp";
 import RadioGroupRating from "./RadioGroupRating";
+import { API_URL } from "../config";
 
 function Result({ result, watched, loading, setOpen, fetchWatched }) {
   const [isAdded, setAdded] = useState(false);
   const [isSuggestionOpen, setSuggestionOpen] = useState(false);
   const [rating, setRating] = useState(3);
-  const url = "http://localhost:3000";
+  const url = `${API_URL}`;
 
   const resultTitle = result?.title || result?.original_name;
 

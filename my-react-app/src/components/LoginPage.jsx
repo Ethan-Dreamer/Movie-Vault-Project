@@ -5,6 +5,7 @@ import { createTheme } from "@mui/material/styles";
 import GoogleIcon from "@mui/icons-material/Google";
 import CheckIcon from "@mui/icons-material/Check";
 import { Link, useNavigate } from "react-router-dom";
+import { API_URL } from "../config";
 
 const THEME = createTheme({
   palette: {
@@ -35,7 +36,7 @@ export default function LoginPage() {
   const signInWithGoogle = async () => {
     try {
       setGoogleLoading(true);
-      window.location.href = "http://localhost:3000/auth/google";
+      window.location.href = `${API_URL}/auth/google`;
     } catch (error) {
       setGoogleLoading(false);
     }
@@ -45,7 +46,7 @@ export default function LoginPage() {
     e.preventDefault();
     setLoading(true);
     try {
-      const result = await fetch("http://localhost:3000/login", {
+      const result = await fetch(`${API_URL}/login`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         credentials: "include",
