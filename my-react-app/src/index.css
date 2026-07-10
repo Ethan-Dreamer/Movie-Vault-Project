@@ -249,7 +249,7 @@ form {
   position: relative;
   background:
     linear-gradient(rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0.3)),
-    url("https://res.cloudinary.com/daol4gyo7/image/upload/v1782402134/login-img_serqzg.jpg") center/cover no-repeat fixed;
+    url("https://res.cloudinary.com/daol4gyo7/image/upload/v1782402134/login-img_serqzg.jpg") center/cover no-repeat;
   height: 100vh;
   width: 100%;
 }
